@@ -27,7 +27,7 @@ function showProducts(categoryId) {
                 html = html + '<div class="product">'
                   +  '<h2>'+product.name+'</h2>'
                   +  '<p>'+product.description+'</p>'
-                  +  '<p>Pret: '+product.pret+'</p>'
+                  +  '<p>Pret: '+product.price+'</p>'
                   +  '<p>Categorie: '+product.category.name+'</p>'
                 + '</div>';
                 
@@ -41,6 +41,40 @@ function showProducts(categoryId) {
                         }
                     )
                 }
+                
+                
+            }
+        )
+        $('#content').html(html);
+    })
+    //todo: implement showOrders method
+function showOrders(productId) {
+    if(productId) {
+        var url = '/products/'+ productId +'/orders';
+    } else {
+        var url = '/orders'   
+    }
+    $.get(url, function(data) {
+        var html = '';
+        data.forEach(
+            function(order) {
+                html = html + '<div class="order">'
+                  +  '<h2>'+order.name+'</h2>'
+                  +  '<p>'+order.modalitate+'</p>'
+                  +  '<p>Cantitate: '+order.cantitate+'</p>'
+                  +  '<p>Produs: '+order.product.name+'</p>'
+                + '</div>';
+                
+                html = html + '<h3>Order reviews</h3>'
+                
+               /* if(Order.reviews) {
+                    order.reviews.forEach(
+                        function(reviewData) {
+                            html = html + reviewData.name + ' ' + reviewData.content;
+                            html = html + '<br>';
+                        }
+                    )
+                }*/
                 
                 
             }

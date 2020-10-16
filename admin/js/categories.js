@@ -19,6 +19,7 @@ function readRecords() {
 
 function displayColumns(value) {
     return 	'<td>'+value.id+'</td>'
+            + '<td class="category_id">'+ (value.category ? value.category.name : value.category_id) +'</td>'
             + '<td class="name">'+value.name+'</td>'
 			+ '<td class="description">'+value.description+'</td>'
 			+ '<td align="center">'
@@ -31,34 +32,47 @@ function displayColumns(value) {
 
 function addRecord() {
     $('#id').val('');
+    $('#category_id').val('');
     $('#name').val('');
     $('#description').val('');
     
     $('#myModalLabel').html('Add New Category');
-  //  $('#add_new_record_modal').modal('show');
 }
+
+function myFunction() {
+confirm("Esti sigur ca vrei sa renunti?");}
 
 function viewRecord(id) {
     var url = "/categories/" + id;
     
     $.get(url, {}, function (data, status) {
         //bind the values to the form fields
+        $('#category_id').val(data.category_id);
         $('#name').val(data.name);
         $('#description').val(data.description);
-
         $('#id').val(id);
-        $('#myModalLabel').html('Edit Category');
+        $('#myModalLabel').html('Edit Product');
         
         $('#add_new_record_modal').modal('show');
     });
 }
 
 function saveRecord() {
+    //get data from the html form
     var formData = $('#record_form').serializeObject();
+    
+     console.log(formData)
+    if(formData.name=="" || formData.description=="")
+    {
+        window.alert("Eroare!Te rugam sa completezi toate campurile!")
+    }
+    //decide if it's an edit or create
+    else{
     if(formData.id) {
         updateRecord(formData);
     } else {
         createRecord(formData);
+    }
     }
 }
 
@@ -90,6 +104,7 @@ function updateRecord(formData) {
         },
         data: formData,
         success: function(data) {
+            $('#row_id_'+formData.id+'>td.category_id').html(formData.category_id);
             $('#row_id_'+formData.id+'>td.name').html(formData.name);
             $('#row_id_'+formData.id+'>td.description').html(formData.description);
             $('#add_new_record_modal').modal('hide');

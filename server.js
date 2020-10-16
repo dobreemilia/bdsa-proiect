@@ -3,9 +3,9 @@ var Sequelize = require("sequelize")
 
 //connect to mysql database
 //baza de date, username, password
-var sequelize = new Sequelize('catalog', 'root', 'pass', {
+var sequelize = new Sequelize('catalog', 'username', 'password', {
     dialect:'mysql',
-    host:'db'
+    host:'127.0.0.1'
 })
 
 sequelize.authenticate().then(function(){
@@ -35,8 +35,17 @@ var Reviews = sequelize.define('reviews', {
     score: Sequelize.INTEGER
 })
 
+var Orders = sequelize.define('orders', {
+    product_id: Sequelize.INTEGER,
+    name: Sequelize.STRING,
+    modalitate: Sequelize.STRING,
+    cantitate: Sequelize.INTEGER
+})
+
+
 Products.belongsTo(Categories, {foreignKey: 'category_id', targetKey: 'id'})
-Products.hasMany(Reviews, {foreignKey: 'product_id'});
+Products.hasMany(Orders, {foreignKey: 'product_id'});
+
 
 var app = express()
 
@@ -204,7 +213,84 @@ app.get('/categories/:id/products', function(request, response) {
         )
 })
 
-app.get('/reviews', function(request, response) {
+/*app.get('/orders', function(request, response) {
+    Orders.findAll(
+        {
+            include: [{
+                model: Products,
+                where: { id: Sequelize.col('orders.product_id') }
+            }]
+        }
+        
+        ).then(
+            function(orders) {
+                response.status(200).send(orders)
+            }
+        )
+})
+
+app.get('/orders/:id', function(request, response) {
+    Orders.findByPk(request.params.id, {
+            include: [{
+                model: Orders,
+                where: { id: Sequelize.col('orders.product_id') }
+            }]
+        }).then(
+            function(order) {
+                response.status(200).send(order)
+            }
+        )
+})
+
+app.post('/orders', function(request, response) {
+    Orders.create(request.body).then(function(order) {
+        response.status(201).send(order)
+    })
+})
+
+app.put('/orders/:id', function(request, response) {
+    Orders.findByPk(request.params.id).then(function(order) {
+        if(order) {
+            order.update(request.body).then(function(order){
+                response.status(201).send(order)
+            }).catch(function(error) {
+                response.status(200).send(error)
+            })
+        } else {
+            response.status(404).send('Not found')
+        }
+    })
+})
+
+app.delete('/orders/:id', function(request, response) {
+    Orders.findByPk(request.params.id).then(function(order) {
+        if(order) {
+            order.destroy().then(function(){
+                response.status(204).send()
+            })
+        } else {
+            response.status(404).send('Not found')
+        }
+    })
+})
+
+app.get('/products/:id/orders', function(request, response) {
+    Orders.findAll({
+            where:{category_id: request.params.id},
+            
+            include: [{
+                model: Products,
+                where: { id: Sequelize.col('orders.product_id') }
+            }]
+        }
+            ).then(
+            function(orders) {
+                response.status(200).send(orders)
+            }
+        )
+})*/
+
+/*app.get('/reviews', function(request, response) {
 
 })
 
@@ -222,6 +308,6 @@ app.put('/reviews/:id', function(request, response) {
 
 app.delete('/reviews/:id', function(request, response) {
     
-})
+})*/
 
 app.listen(8080)

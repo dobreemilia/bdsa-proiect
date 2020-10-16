@@ -7,7 +7,7 @@ $(document).ready(function () {
 
 // READ records
 function readRecords() {
-    $.get("/products/", {}, function (data, status) {
+    $.get("/orders/", {}, function (data, status) {
         data.forEach(function(value) {
             var row = '<tr id="row_id_'+ value.id +'">'
             			+ displayColumns(value)
@@ -19,9 +19,9 @@ function readRecords() {
 
 function displayColumns(value) {
     return 	'<td>'+value.id+'</td>'
-            + '<td class="category_id">'+ (value.category ? value.category.name : value.category_id) +'</td>'
+            + '<td class="product_id">'+ (value.product ? value.product.name : value.product_id) +'</td>'
             + '<td class="name">'+value.name+'</td>'
-			+ '<td class="description">'+value.description+'</td>'
+            + '<td class="modalitate">'+value.modalitate+'</td>'
 			+ '<td align="center">'
 			+	'<button onclick="viewRecord('+ value.id +')" class="btn btn-edit">Update</button>'
 			+ '</td>'
@@ -32,31 +32,33 @@ function displayColumns(value) {
 
 function addRecord() {
     $('#id').val('');
-    $('#category_id').val('');
+    $('#product_id').val('');
     $('#name').val('');
-    $('#description').val('');
+    $('#modalitate').val('');
     
-    $('#myModalLabel').html('Add New Product');
+    
+    $('#myModalLabel').html('Add New Order');
 }
+
+
+
 
 function goBack() {
   window.history.back();
 }
 
-function myFunction() {
-confirm("Esti sigur ca vrei sa renunti?");}
 
 function viewRecord(id) {
-    var url = "/products/" + id;
+    var url = "/orders/" + id;
     
     $.get(url, {}, function (data, status) {
         //bind the values to the form fields
-        $('#category_id').val(data.category_id);
+        $('#product_id').val(data.category_id);
         $('#name').val(data.name);
-        $('#description').val(data.description);
-        $('#price').val(data.price);
+        $('#modalitate').val(data.modalitate);
+        $('#cantitate').val(data.cantitate);
         $('#id').val(id);
-        $('#myModalLabel').html('Edit Product');
+        $('#myModalLabel').html('Edit Order');
         
         $('#add_new_record_modal').modal('show');
     });
@@ -66,9 +68,8 @@ function saveRecord() {
     //get data from the html form
     var formData = $('#record_form').serializeObject();
     
-    
     console.log(formData)
-    if(formData.name=="" || formData.description=="")
+    if(formData.name=="" || formData.modalitate=="")
     {
         window.alert("Eroare!Te rugam sa completezi toate campurile!")
     }
@@ -84,7 +85,7 @@ function saveRecord() {
 
 function createRecord(formData) {
     $.ajax({
-        url: '/products/',
+        url: '/orders/',
         type: 'POST',
         accepts: {
             json: 'application/json'
@@ -103,16 +104,17 @@ function createRecord(formData) {
 
 function updateRecord(formData) {
     $.ajax({
-        url: '/products/'+formData.id,
+        url: '/orders/'+formData.id,
         type: 'PUT',
         accepts: {
             json: 'application/json'
         },
         data: formData,
         success: function(data) {
-            $('#row_id_'+formData.id+'>td.category_id').html(formData.category_id);
+            $('#row_id_'+formData.id+'>td.product_id').html(formData.product_id);
             $('#row_id_'+formData.id+'>td.name').html(formData.name);
-            $('#row_id_'+formData.id+'>td.description').html(formData.description);
+            $('#row_id_'+formData.id+'>td.modalitate').html(formData.modalitate);
+
             $('#add_new_record_modal').modal('hide');
         } 
     });
@@ -120,7 +122,7 @@ function updateRecord(formData) {
 
 function deleteRecord(id) {
     $.ajax({
-        url: '/products/'+id,
+        url: '/orders/'+id,
         type: 'DELETE',
         success: function(data) {
             $('#row_id_'+id).remove();
